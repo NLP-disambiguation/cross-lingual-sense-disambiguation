@@ -13,6 +13,8 @@ def word2vec(token_list, save=False):
     :param token_list: list of tagged tokens
     :return: generated model
     """
+    global model_vocabulary_en
+    model_vocabulary_en = None
     corpus = untag_tokens(token_list)
 
     word_emb_model = Word2Vec(sentences=corpus, window=5, min_count=1, workers=4)

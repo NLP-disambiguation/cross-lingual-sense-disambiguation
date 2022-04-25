@@ -3,9 +3,14 @@ import nltk
 from nltk.corpus import stopwords
 import pandas as pd
 import classla
+import numpy as np
 from nltk.corpus import wordnet as wn
-from googletrans import Translator # pip3 install googletrans==3.1.0a0
-
+from googletrans import Translator  # pip3 install googletrans==3.1.0a0
+import requests, zipfile
+from io import BytesIO
+import os
+import shutil
+import gzip
 
 # example for determining meanings and english translation: https://babelnet.org/search?word=zebra&lang=SL&transLang=EN
 
@@ -92,7 +97,8 @@ def wordnet_similarity(w1, w2):
             try:
                 s = sense1.lch_similarity(sense2)
                 if s > similarity: similarity = s
-            except: pass
+            except:
+                pass
     return similarity
 
 
@@ -104,8 +110,10 @@ def translate_si_en(word, reverse=False):
     :return: translated word and confidence
     """
     translator = Translator()
-    if not reverse: translation = translator.translate(word, src="sl", dest="en")
-    else: translation = translator.translate(word, src="en", dest="si")
+    if not reverse:
+        translation = translator.translate(word, src="sl", dest="en")
+    else:
+        translation = translator.translate(word, src="en", dest="si")
     confidence = translation.extra_data['confidence']
     if translation.text != word:
         translation = translation.text
@@ -115,6 +123,41 @@ def translate_si_en(word, reverse=False):
     return translation, confidence
 
 
+def download_unzip(url):
+    print('Downloading started')
+    req = requests.get(url)
+    print('Downloading Completed')
+    # extracting the zip file contents
+    zippedfile = zipfile.ZipFile(BytesIO(req.content))
+    zippedfile.extractall()
 
 
+def download_gzip(url):
+    filename = url.split('/')[-1]
+    req = requests.get(url, stream=True)
+    with open(filename, 'wb') as location:
+        shutil.copyfileobj(req.raw, location)
+    with gzip.open(filename, 'rb') as f_in:
+        with open("extracted_" + filename, 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
+    return "extracted_" + filename
 
+
+def load_downloaded_model(file_path):
+    # in form word w1 w2 ... wn
+    word2vec = dict()
+    i = 0
+    with open(file_path, "r") as file:
+        line = file.readline()
+        while len(line) > 0:
+            if i % 100000 == 0: print(i)
+            i += 1
+            try:
+                key = line.split(' ', 1)[0]  # the first word is the key
+                value = np.array([float(val) for val in line.split(' ')[1:]], dtype=np.float32)
+                word2vec[key] = value
+            except:
+                print(line)
+                break
+            line = file.readline()
+    return word2vec
