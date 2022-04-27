@@ -1,5 +1,7 @@
 # cross-lingual-sense-disambiguation
 
+Go to -> disambiguation.py
+
 Večpomenke
   - zebra - prehod za pešce in žival
   - miška - predmet in žival
