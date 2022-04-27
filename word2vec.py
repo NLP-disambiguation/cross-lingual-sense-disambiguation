@@ -4,8 +4,10 @@ import itertools
 import numpy as np
 from gensim.models import Word2Vec
 from sklearn.metrics.pairwise import cosine_similarity
+from gensim.models import KeyedVectors
 
 model_vocabulary_en = None
+
 
 def word2vec(token_list, save=False):
     """
@@ -23,6 +25,7 @@ def word2vec(token_list, save=False):
 
     return word_emb_model
 
+
 def translate(word, model_vocabulary):
     global model_vocabulary_en
     if model_vocabulary_en == None:
@@ -36,18 +39,21 @@ def translate(word, model_vocabulary):
     for i, wv in enumerate(model_vocabulary_en):
         t = t.replace("to ", "")
         wv = wv.replace("to ", "")
-        #print(t, wv)
+        # print(t, wv)
         s = wordnet_similarity(t, wv)
-        #print(s)
+        # print(s)
         if s > max[1]: max = [model_vocabulary[i], s]
     # print(max)
     return max
 
+
 def get_sif_feature_vectors(sentence1, sentence2, word_emb_model):
     contained_sentence1 = [token for token in sentence1.split() if token in word_emb_model.wv.index_to_key]
-    not_contained_sentence1 = [translate(token, word_emb_model.wv.index_to_key) for token in sentence1.split() if token not in contained_sentence1]
+    not_contained_sentence1 = [translate(token, word_emb_model.wv.index_to_key) for token in sentence1.split() if
+                               token not in contained_sentence1]
     contained_sentence2 = [token for token in sentence2.split() if token in word_emb_model.wv.index_to_key]
-    not_contained_sentence2 = [translate(token, word_emb_model.wv.index_to_key) for token in sentence2.split() if token not in contained_sentence2]
+    not_contained_sentence2 = [translate(token, word_emb_model.wv.index_to_key) for token in sentence2.split() if
+                               token not in contained_sentence2]
     not_contained_sentence1 = [t[0] for t in not_contained_sentence1 if t[1] > 0.5]
     not_contained_sentence2 = [t[0] for t in not_contained_sentence2 if t[1] > 0.5]
     sentence1 = contained_sentence1 + not_contained_sentence1
@@ -83,3 +89,88 @@ def Disambiguation_w2v(sentence, text_classes, word_emb_model):
                 pass
         similarities[c] = sim
     return similarities
+
+
+def load_keyed_vector_model(path):
+    model = KeyedVectors.load_word2vec_format(path)
+    return model
+
+
+def generate_combinations(one_token_list, token_substitutions, ambiguous_word, current_token_i, sentences):
+    """
+    Recursively generate token combinations - add a new token to the end of each current sentence
+    :param one_token_list: list of tokens for one sentence
+    :param token_substitutions: dictionary of similar words for a token
+    :param ambiguous_word:
+    :param current_token_i:
+    :param sentences:
+    :return:
+    """
+    if current_token_i == len(one_token_list):
+        return sentences
+    new_sentences = []
+    if sentences == [] and one_token_list[current_token_i][0] != ambiguous_word:
+        for substitution in token_substitutions[one_token_list[current_token_i][0]]:
+            new_sentences.append([substitution])
+    if sentences == [] and one_token_list[current_token_i][0] == ambiguous_word:
+        new_sentences.append([ambiguous_word])
+    else:
+        if one_token_list[current_token_i][0] == ambiguous_word:
+            for sentence in sentences:
+                new_sentences.append(sentence + [ambiguous_word])
+        else:
+            for substitution in token_substitutions[one_token_list[current_token_i][0]]:
+                for sentence in sentences:
+                    new_sentences.append(sentence + [substitution])
+    return generate_combinations(one_token_list, token_substitutions, ambiguous_word, current_token_i + 1,
+                                 new_sentences)
+
+
+def generate_similar(one_token_list, ambiguous_word, model, n_similar=10):
+    """
+    Generates all possible token combinations of similar words based on input token list.
+    :param one_token_list: list of tokens for one sentence
+    :param ambiguous_word:
+    :param model:
+    :return:
+    """
+    token_substitutions = {}
+    for t in one_token_list:
+        lemma, upos, data = t
+        if lemma != ambiguous_word:
+            try:
+                generated = model.most_similar_cosmul(positive=[lemma], topn=n_similar)
+                generated = tokenize(".".join([w[0].replace("_", " ") for w in generated]))
+                output = []
+                for ts in generated:
+                    for tok in ts: output += [tok]
+                output = [s[0] for s in output if s[1] == upos]
+                output.append(lemma)
+                token_substitutions[lemma] = list(set(output))
+            except Exception as e:
+                print(e)
+                token_substitutions[lemma] = [lemma]
+    return generate_combinations(one_token_list, token_substitutions, ambiguous_word, 0, [])
+
+
+def generate_additional_data(data, fname, model, n_similar=10, target_column="meaning"):
+    """
+    Generate similar sequences of tokens based on input
+    :param data: dataframe containing original data
+    :param fname: file where the new sequences will be written to
+    :param model: word2vec dictionary
+    :param n_similar: number of similar words to attempt to generate
+    :param target_column: the meaning column name in the dataframe
+    :return:
+    """
+    corpus = " ".join(list(data.sentence.values))
+    token_list = tokenize(corpus)
+    with open(fname, "w", encoding='utf-8') as file:
+        file.write(",".join(data.columns) + "\n")
+        for ambigous_word in data.word.unique():
+            subdata = data[data.word == ambigous_word]
+            for i in subdata.index:  # index will be the same as original df
+                one_token_list = token_list[i]
+                similars = generate_similar(one_token_list, ambigous_word, model, n_similar=n_similar)
+                for row in similars:
+                    file.write(" ".join(row) + "," + data.iloc[i][target_column] + "," + ambigous_word + "\n")

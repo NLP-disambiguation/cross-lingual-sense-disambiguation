@@ -10,9 +10,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import classification_report, confusion_matrix
 
-def preprocess_tokens(data, source_column = "sentence", target_column = "meaning"):
-    token_list = untag_tokens(tokenize(" ".join(list(data[source_column].values))))
-    token_list = pd.Series(token_list).apply(lambda x: " ".join(x))
+
+def preprocess_tokens(data, generated=False, source_column="sentence", target_column="meaning"):
+    ##if generated: token_list = data[source_column].apply(lambda x: x.split(" "))
+    if not generated:
+        token_list = untag_tokens(tokenize(" ".join(list(data[source_column].values))))
+        token_list = pd.Series(token_list).apply(lambda x: " ".join(x))
+    else:
+        token_list = data[source_column].copy()
 
     le = preprocessing.LabelEncoder()
     Y_new = data[target_column]
@@ -20,17 +25,17 @@ def preprocess_tokens(data, source_column = "sentence", target_column = "meaning
 
     return token_list, Y_new
 
-def prepare_data(data, tokenized_sent_list, w2vmodel):
+
+def prepare_data(tokenized_sent_list, w2vmodel):
     # prepare tokenizer
     t = Tokenizer()
     t.fit_on_texts(tokenized_sent_list)
     vocab_size = len(t.word_index) + 1
     # integer encode the documents
-    encoded_docs = t.texts_to_sequences(data['sentence'].values)
+    encoded_docs = t.texts_to_sequences(tokenized_sent_list)
     # pad documents to a max length of 10 words
     max_length = 10
     X = pad_sequences(encoded_docs, maxlen=max_length, padding='post')
-
 
     veclen = w2vmodel['telefon'].shape[0]
     embedding_matrix = zeros((vocab_size, veclen))
@@ -42,6 +47,7 @@ def prepare_data(data, tokenized_sent_list, w2vmodel):
             except:
                 print(word)
     return X, embedding_matrix, max_length, vocab_size, veclen
+
 
 def make_model(embedding_matrix, max_len, vocab_size, veclen):
     input = Input(shape=(max_len,))
@@ -55,6 +61,7 @@ def make_model(embedding_matrix, max_len, vocab_size, veclen):
     model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
     return model
+
 
 def metrics(history, model, X_test, Y_test):
     loss, accuracy = model.evaluate(X_test, Y_test, verbose=2)

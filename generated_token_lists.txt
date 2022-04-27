@@ -1,0 +1,128 @@
+sentence,meaning,word
+prečkati zebra ogledati promet,prehod_za_pesce,zebra
+prečkatati zebra ogledati promet,prehod_za_pesce,zebra
+prečkati zebra gledati promet,prehod_za_pesce,zebra
+prečkatati zebra gledati promet,prehod_za_pesce,zebra
+prečkati zebra pogledati promet,prehod_za_pesce,zebra
+prečkatati zebra pogledati promet,prehod_za_pesce,zebra
+prečkati zebra izgledati promet,prehod_za_pesce,zebra
+prečkatati zebra izgledati promet,prehod_za_pesce,zebra
+prečkati zebra spregledati promet,prehod_za_pesce,zebra
+prečkatati zebra spregledati promet,prehod_za_pesce,zebra
+poćakati zebra šivati,prehod_za_pesce,zebra
+poćakati zebra popivati,prehod_za_pesce,zebra
+poćakati zebra začeti,prehod_za_pesce,zebra
+poćakati zebra pridobivati,prehod_za_pesce,zebra
+poćakati zebra umivati,prehod_za_pesce,zebra
+poćakati zebra dobivati,prehod_za_pesce,zebra
+cesta umazan zebra videt,prehod_za_pesce,zebra
+cesta umazan zebra videti,prehod_za_pesce,zebra
+zebra obarvan bel,prehod_za_pesce,zebra
+zebra pobarvan bel,prehod_za_pesce,zebra
+zebra obarvan siv,prehod_za_pesce,zebra
+zebra pobarvan siv,prehod_za_pesce,zebra
+opaziti zebra cesta,prehod_za_pesce,zebra
+ulica zebra,prehod_za_pesce,zebra
+sulica zebra,prehod_za_pesce,zebra
+ležeč polica imeti zebra,prehod_za_pesce,zebra
+ležeč policaj imeti zebra,prehod_za_pesce,zebra
+stop zebra vozišče,prehod_za_pesce,zebra
+stop zebra rastišče,prehod_za_pesce,zebra
+stop zebra hrbtišče,prehod_za_pesce,zebra
+stop zebra mostišče,prehod_za_pesce,zebra
+stop zebra cestišče,prehod_za_pesce,zebra
+lebdeč prehod pešec lahko doreči 3d zebra,prehod_za_pesce,zebra
+lebdeč prehod belogardist lahko doreči 3d zebra,prehod_za_pesce,zebra
+lebdeč prehod kolesar lahko doreči 3d zebra,prehod_za_pesce,zebra
+lebdeč prehod pešec lahko zavreči 3d zebra,prehod_za_pesce,zebra
+lebdeč prehod belogardist lahko zavreči 3d zebra,prehod_za_pesce,zebra
+lebdeč prehod kolesar lahko zavreči 3d zebra,prehod_za_pesce,zebra
+lebdeč prehod pešec lahko reči 3d zebra,prehod_za_pesce,zebra
+lebdeč prehod belogardist lahko reči 3d zebra,prehod_za_pesce,zebra
+lebdeč prehod kolesar lahko reči 3d zebra,prehod_za_pesce,zebra
+lebdeč prehod pešec lahko izreči 3d zebra,prehod_za_pesce,zebra
+lebdeč prehod belogardist lahko izreči 3d zebra,prehod_za_pesce,zebra
+lebdeč prehod kolesar lahko izreči 3d zebra,prehod_za_pesce,zebra
+lebdeč prehod pešec lahko povedati 3d zebra,prehod_za_pesce,zebra
+lebdeč prehod belogardist lahko povedati 3d zebra,prehod_za_pesce,zebra
+lebdeč prehod kolesar lahko povedati 3d zebra,prehod_za_pesce,zebra
+zebra datevec beležiti stevilo vozilo,prehod_za_pesce,zebra
+zebra števíl beležiti stevilo vozilo,prehod_za_pesce,zebra
+zebra števec beležiti stevilo vozilo,prehod_za_pesce,zebra
+zebra števka beležiti stevilo vozilo,prehod_za_pesce,zebra
+zebra datevec beležiti število vozilo,prehod_za_pesce,zebra
+zebra števíl beležiti število vozilo,prehod_za_pesce,zebra
+zebra števec beležiti število vozilo,prehod_za_pesce,zebra
+zebra števka beležiti število vozilo,prehod_za_pesce,zebra
+jesti meso zebra,zival,zebra
+umivati meso zebra,zival,zebra
+jesti mleko zebra,zival,zebra
+umivati mleko zebra,zival,zebra
+kmetija poiskati zebra,zival,zebra
+kmetica poiskati zebra,zival,zebra
+kmetija obiskati zebra,zival,zebra
+kmetica obiskati zebra,zival,zebra
+kmetija obiskovati zebra,zival,zebra
+kmetica obiskovati zebra,zival,zebra
+Srđan ogrožen,zival,zebra
+zabrđe ogrožen,zival,zebra
+Korpiklaani ogrožen,zival,zebra
+Zebra ogrožen,zival,zebra
+Srđan zgrožen,zival,zebra
+zabrđe zgrožen,zival,zebra
+Korpiklaani zgrožen,zival,zebra
+Zebra zgrožen,zival,zebra
+poiskati rastlinski vrt zebra nov vrsta,zival,zebra
+obiskati rastlinski vrt zebra nov vrsta,zival,zebra
+obiskovati rastlinski vrt zebra nov vrsta,zival,zebra
+poiskati živalski vrt zebra nov vrsta,zival,zebra
+obiskati živalski vrt zebra nov vrsta,zival,zebra
+obiskovati živalski vrt zebra nov vrsta,zival,zebra
+konj prestrašiti zebra,zival,zebra
+konj jezditi zebra,zival,zebra
+konj odditi zebra,zival,zebra
+konj jahati zebra,zival,zebra
+konj čuditi zebra,zival,zebra
+Srđan spadati skupina plazilec,zival,zebra
+zabrđe spadati skupina plazilec,zival,zebra
+Korpiklaani spadati skupina plazilec,zival,zebra
+Zebra spadati skupina plazilec,zival,zebra
+Srđan spadati skupina glodalec,zival,zebra
+zabrđe spadati skupina glodalec,zival,zebra
+Korpiklaani spadati skupina glodalec,zival,zebra
+Zebra spadati skupina glodalec,zival,zebra
+Srđan spadati skupina sesalč,zival,zebra
+zabrđe spadati skupina sesalč,zival,zebra
+Korpiklaani spadati skupina sesalč,zival,zebra
+Zebra spadati skupina sesalč,zival,zebra
+Srđan spadati skupina sesalec,zival,zebra
+zabrđe spadati skupina sesalec,zival,zebra
+Korpiklaani spadati skupina sesalec,zival,zebra
+Zebra spadati skupina sesalec,zival,zebra
+odkupiti obleka imeti obarvanost zebra,zival,zebra
+kupiti obleka imeti obarvanost zebra,zival,zebra
+prikupiti obleka imeti obarvanost zebra,zival,zebra
+prodati obleka imeti obarvanost zebra,zival,zebra
+odkupiti obleka imeti vzorec zebra,zival,zebra
+kupiti obleka imeti vzorec zebra,zival,zebra
+prikupiti obleka imeti vzorec zebra,zival,zebra
+prodati obleka imeti vzorec zebra,zival,zebra
+prenehati ličen vrsta zebra,zival,zebra
+obstajati ličen vrsta zebra,zival,zebra
+ostajati ličen vrsta zebra,zival,zebra
+prenehati obarvan vrsta zebra,zival,zebra
+obstajati obarvan vrsta zebra,zival,zebra
+ostajati obarvan vrsta zebra,zival,zebra
+prenehati različen vrsta zebra,zival,zebra
+obstajati različen vrsta zebra,zival,zebra
+ostajati različen vrsta zebra,zival,zebra
+vedeti zebra,zival,zebra
+metoda obramba zebra smejati dejstvo,zival,zebra
+metoda obramba zebra božati dejstvo,zival,zebra
+metoda obramba zebra bežati dejstvo,zival,zebra
+metoda obramba zebra ležati dejstvo,zival,zebra
+metoda obramba zebra ubežati dejstvo,zival,zebra
+metoda obramba zebra zaspati dejstvo,zival,zebra
+metoda obramba zebra opažati dejstvo,zival,zebra
+metoda obramba zebra zbežati dejstvo,zival,zebra
+metoda obramba zebra spati dejstvo,zival,zebra

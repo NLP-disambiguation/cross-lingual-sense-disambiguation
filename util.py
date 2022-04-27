@@ -8,19 +8,17 @@ from nltk.corpus import wordnet as wn
 from googletrans import Translator  # pip3 install googletrans==3.1.0a0
 import requests, zipfile
 from io import BytesIO
-import os
 import shutil
 import gzip
 
 # example for determining meanings and english translation: https://babelnet.org/search?word=zebra&lang=SL&transLang=EN
 
+nltk.download('punkt')
+nltk.download('stopwords')
 
 classla.download('sl')  # download standard models for Slovenian
 nlp = classla.Pipeline('sl', processors='tokenize,pos,lemma,depparse')
-
 slo_stopwords = stopwords.words('slovene')
-nltk.download('punkt')
-nltk.download('stopwords')
 
 
 def load(path, transform=False, transform_column=None):
@@ -124,6 +122,10 @@ def translate_si_en(word, reverse=False):
 
 
 def download_unzip(url):
+    """
+    Download a zip file and extract its contents to current directory
+    :param url: url to zip file
+    """
     print('Downloading started')
     req = requests.get(url)
     print('Downloading Completed')
@@ -133,6 +135,11 @@ def download_unzip(url):
 
 
 def download_gzip(url):
+    """
+    Download a gz file and extract it to the new file
+    :param url: url to gz file
+    :return: filename
+    """
     filename = url.split('/')[-1]
     req = requests.get(url, stream=True)
     with open(filename, 'wb') as location:
@@ -143,21 +150,42 @@ def download_gzip(url):
     return "extracted_" + filename
 
 
+def remove_hash_model(fname1, fname2):
+    """
+    If the word2vec model has a # in the first line that causes error loading it,
+    this efficiently replaces just the first line
+    :param fname1: name of the model file
+    :param fname2: name of the new model file
+    :return:
+    """
+    with open(fname1, "r") as from_file:
+        with open(fname2, "w") as to_file:
+            l = from_file.readline()  # and discard
+            l = l.replace("# ", "")
+            to_file.write(l)
+            shutil.copyfileobj(from_file, to_file)
+
+
 def load_downloaded_model(file_path):
-    # in form word w1 w2 ... wn
+    """
+    Load the word2vec model in dictionary form word : [values]
+    :param file_path: path to .vec file
+    :return: dictionary model
+    """
     word2vec = dict()
     i = 0
-    with open(file_path, "r") as file:
+    with open(file_path, "r", encoding='utf-8') as file:
+        file.readline()
         line = file.readline()
         while len(line) > 0:
-            if i % 100000 == 0: print(i)
+            if i % 100000 == 0: print("reading...", i)
             i += 1
             try:
-                key = line.split(' ', 1)[0]  # the first word is the key
-                value = np.array([float(val) for val in line.split(' ')[1:]], dtype=np.float32)
+                key = line.replace(" \n", "").split(" ", 1)
+                key, value = key[0], key[1].split(" ")
+                value = np.array([float(val) for val in value], dtype=np.float32)
                 word2vec[key] = value
-            except:
-                print(line)
-                break
+            except Exception as e:
+                print(e, line)
             line = file.readline()
     return word2vec
