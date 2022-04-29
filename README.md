@@ -11,6 +11,7 @@ Večpomenke
   - list - predmet in del rastline
   - občina - ustanova in upravna enota
   - krilo - oblačilo in del živali
+  - revija: publikacija in predstavitev
 
 ### tokenizer
 - slovene tokenizer from classla package
