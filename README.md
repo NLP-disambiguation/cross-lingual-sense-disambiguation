@@ -11,13 +11,17 @@ Večpomenke
   - list - predmet in del rastline
   - občina - ustanova in upravna enota
   - krilo - oblačilo in del živali
-  - 
-tfidf
+
+### tokenizer
+- slovene tokenizer from classla package
+- nltk slovene stopwords
+- 
+### tfidf
 - each tokenized sentence in corpus is vectorized with uni and bigrams
 - query is transformed into vector, and then compared with vectors of corpus
 - most similar by cosine similarity is chosen
 
-word2vec
+### word2vec
 - compare input sentence with sentences in data collection
 - break sentence down into words
 - for words in each sentence, calculate smooth inverse frequency, SIF with 
@@ -28,7 +32,7 @@ similarity then being sum of sif * vector for each word and its vector.
 (so if a word has more senses, it might translate to one) and take the word in model
 that is most sense similar based on Leacock Chodorow method
 
-Neural network
+### Neural network
 - used LSTM 
 - embeddings from word2vec 
 - increase amount of vocabulary by generating similar tokenized sentences with word2vec
