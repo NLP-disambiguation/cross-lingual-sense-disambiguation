@@ -18,21 +18,25 @@ def word2vec(token_list, save=False):
     global model_vocabulary_en
     model_vocabulary_en = None
     corpus = untag_tokens(token_list)
-
     word_emb_model = Word2Vec(sentences=corpus, window=5, min_count=1, workers=4)
-    if save: word_emb_model.save("word2vec.model")
     print("vocabulary:", word_emb_model.wv.index_to_key)  # make sure this is words, not characters
+    if save: word_emb_model.save("word2vec.model")
 
     return word_emb_model
 
 
 def translate(word, model_vocabulary):
+    # for words not in model, use closest that is by a measure of sense similarity in English where data is
+    # more available through translation
+
     global model_vocabulary_en
     if model_vocabulary_en == None:
         model_vocabulary_en = []
         for wv in model_vocabulary:
-            t, conf = translate_si_en(wv)
-            model_vocabulary_en.append(t)
+            try:
+                t, conf = translate_si_en(wv)
+                model_vocabulary_en.append(t)
+            except Exception as e: print(wv, e)
 
     max = ["", -1]
     t, conf = translate_si_en(word)
@@ -78,7 +82,8 @@ def Disambiguation_w2v(sentence, text_classes, word_emb_model):
     sentence = lemmatize_query(sentence)[0]
     similarities = {}
     for c in text_classes.keys():
-        c_tokens = tokenize(" ".join(text_classes[c]))
+        print(c)
+        c_tokens = tokenize(text_classes[c])
         c_sentences = [" ".join(ws) for ws in untag_tokens(c_tokens)]
         sim = 0
         for s in c_sentences:
@@ -140,7 +145,7 @@ def generate_similar(one_token_list, ambiguous_word, model, n_similar=10):
         if lemma != ambiguous_word:
             try:
                 generated = model.most_similar_cosmul(positive=[lemma], topn=n_similar)
-                generated = tokenize(".".join([w[0].replace("_", " ") for w in generated]))
+                generated = tokenize([w[0].replace("_", " ") for w in generated])
                 output = []
                 for ts in generated:
                     for tok in ts: output += [tok]
@@ -148,9 +153,13 @@ def generate_similar(one_token_list, ambiguous_word, model, n_similar=10):
                 output.append(lemma)
                 token_substitutions[lemma] = list(set(output))
             except Exception as e:
-                print(e)
+                print("generate_similar", e)
                 token_substitutions[lemma] = [lemma]
-    return generate_combinations(one_token_list, token_substitutions, ambiguous_word, 0, [])
+        else: token_substitutions[lemma] = [lemma]
+    all_tokens = []
+    for k in token_substitutions.keys():
+        all_tokens += token_substitutions[k]
+    return all_tokens
 
 
 def generate_additional_data(data, fname, model, n_similar=10, target_column="meaning"):
@@ -163,14 +172,14 @@ def generate_additional_data(data, fname, model, n_similar=10, target_column="me
     :param target_column: the meaning column name in the dataframe
     :return:
     """
-    corpus = " ".join(list(data.sentence.values))
-    token_list = tokenize(corpus)
+    token_list = tokenize(list(data.sentence.values))
     with open(fname, "w", encoding='utf-8') as file:
         file.write(",".join(data.columns) + "\n")
         for ambigous_word in data.word.unique():
+            print(ambigous_word)
             subdata = data[data.word == ambigous_word]
             for i in subdata.index:  # index will be the same as original df
                 one_token_list = token_list[i]
+                file.write(" ".join([w[0] for w in one_token_list]) + "," + data.iloc[i][target_column] + "," + ambigous_word + "\n")
                 similars = generate_similar(one_token_list, ambigous_word, model, n_similar=n_similar)
-                for row in similars:
-                    file.write(" ".join(row) + "," + data.iloc[i][target_column] + "," + ambigous_word + "\n")
+                file.write(" ".join(similars) + "," + data.iloc[i][target_column] + "," + ambigous_word + "\n")

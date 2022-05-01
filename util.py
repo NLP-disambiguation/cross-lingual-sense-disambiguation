@@ -15,6 +15,7 @@ import gzip
 
 nltk.download('punkt')
 nltk.download('stopwords')
+nltk.download('wordnet')
 
 classla.download('sl')  # download standard models for Slovenian
 nlp = classla.Pipeline('sl', processors='tokenize,pos,lemma,depparse')
@@ -34,25 +35,30 @@ def load(path, transform=False, transform_column=None):
         label_encoder = sklearn.preprocessing.LabelEncoder()
         data[transform_column] = label_encoder.fit_transform(data[transform_column])
     text_classes = {}
-    for id in data.meaning.unique():
-        text_classes[id] = data[data.meaning == id].sentence.values
+    for w in data.word.unique():
+        for id in data[data.word == w].meaning.unique():
+            text_classes[w + "_" + id] = data[(data.meaning == id) & (data.word == w)].sentence.values
     return data, text_classes
 
 
 def tokenize(text):
     """
     Tokenize given text in Slovene
-    :param text: string
+    :param text: list of sentences
     :return: list of tagged tokens
     """
-    doc = nlp(text)
+
     # print(doc.to_conll())
     token_list = []
-    for sentence in doc.sentences:
-        tokens = [t.to_dict()[0] for t in sentence.tokens]
-        tokens = [[t["lemma"], t["upos"], t["feats"] if "feats" in t.keys() else None]
-                  for t in tokens
-                  if t["lemma"] not in slo_stopwords and t["upos"] != "PUNCT"]
+    for t in text:
+        doc = nlp(t)
+        tokens = []
+        for sentence in doc.sentences:
+            sent_tokens = [t.to_dict()[0] for t in sentence.tokens]
+            sent_tokens = [[t["lemma"], t["upos"], t["feats"] if "feats" in t.keys() else None]
+                           for t in sent_tokens
+                           if t["lemma"] not in slo_stopwords and t["upos"] != "PUNCT"]
+            tokens += sent_tokens
         token_list.append(tokens)
     return token_list
 
@@ -71,7 +77,7 @@ def untag_tokens(token_list):
 
 
 def lemmatize_query(query):
-    query = untag_tokens(tokenize(query))
+    query = untag_tokens(tokenize([query]))
     return [" ".join(ws) for ws in query]
 
 
@@ -116,7 +122,7 @@ def translate_si_en(word, reverse=False):
     if translation.text != word:
         translation = translation.text
     else:
-        translation = translation.extra_data['all-translations'][0][1][0]
+        translation = translation.extra_data['possible-translations'][0][0]
 
     return translation, confidence
 

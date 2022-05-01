@@ -11,19 +11,20 @@ import numpy as np
 from sklearn.metrics import classification_report, confusion_matrix
 
 
-def preprocess_tokens(data, generated=False, source_column="sentence", target_column="meaning"):
+def preprocess_tokens(data, generated=False, source_column="sentence", target_column="meaning", word_column = "word"):
     ##if generated: token_list = data[source_column].apply(lambda x: x.split(" "))
     if not generated:
-        token_list = untag_tokens(tokenize(" ".join(list(data[source_column].values))))
+        token_list = untag_tokens(tokenize(list(data[source_column].values)))
         token_list = pd.Series(token_list).apply(lambda x: " ".join(x))
     else:
         token_list = data[source_column].copy()
 
     le = preprocessing.LabelEncoder()
-    Y_new = data[target_column]
+    Y_new = data[word_column] + " " + data[target_column]
     Y_new = le.fit_transform(Y_new)
+    Y_old = {v:le.inverse_transform([v]) for v in Y_new}
 
-    return token_list, Y_new
+    return token_list, Y_new, Y_old
 
 
 def prepare_data(tokenized_sent_list, w2vmodel):
@@ -49,14 +50,14 @@ def prepare_data(tokenized_sent_list, w2vmodel):
     return X, embedding_matrix, max_length, vocab_size, veclen
 
 
-def make_model(embedding_matrix, max_len, vocab_size, veclen):
+def make_model(embedding_matrix, max_len, vocab_size, veclen, n_classes):
     input = Input(shape=(max_len,))
     model = Embedding(vocab_size, veclen, weights=[embedding_matrix], input_length=max_len)(input)
     model = Bidirectional(LSTM(veclen, return_sequences=True, dropout=0.50), merge_mode='concat')(model)
     model = TimeDistributed(Dense(veclen, activation='relu'))(model)
     model = Flatten()(model)
     model = Dense(100, activation='relu')(model)
-    output = Dense(3, activation='softmax')(model)
+    output = Dense(n_classes+1, activation='softmax')(model)
     model = Model(input, output)
     model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
