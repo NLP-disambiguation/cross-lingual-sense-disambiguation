@@ -142,7 +142,7 @@ def use_best(query, word):
         entry = [e for e in word_tokenize(entry) if e not in stopwords and e.isalnum()]
         entry = [e[0].lower() for e in pos_tag(entry)]
         s = similarity(query, entry)
-        print(query, sskj_results["definitions"][i], sskj_results["definicije"][i], s)
+        # print(query, sskj_results["definitions"][i], sskj_results["definicije"][i], s)
         if s > max_match[1]: max_match = [sskj_results["definicije"][i], s]
     return max_match
 

@@ -11,7 +11,7 @@ def do_LSTM(data):
     # download_unzip('https://hdl.handle.net/1839/a627f276-6d9f-4c8c-9259-11b0d1141dc7@download')
     fname = "wiki.sl.vec"
 
-    generate = True
+    generate = False
     if generate: tokenized_sent_list, Y = LSTM_generation(data, fname)
     else:
         tokenized_sent_list, Y, Y_original = preprocess_tokens(data)
@@ -24,7 +24,7 @@ def do_LSTM(data):
     metrics(history, NNmodel, X_test, Y_test)
 
 
-def do_tfidf(token_list):
+def do_tfidf(token_list, data):
     tfidfvectorizer, tfidfvectors, top_ngrams = tfidf(token_list)
     matches, biggest_match = Disambiguation_tfidf("Danes sem jezdil zebro.", tfidfvectorizer, tfidfvectors)
     print("tfidf result:", data.iloc[biggest_match].meaning)
@@ -42,7 +42,7 @@ def do_dictionary(data):
         for i, r in data.iterrows():
             res = use_best(r.sentence, r.word)
             print(res)
-            f.write(",".join([r.sentence, r.word, res[0], res[1]]) + "\n")
+            f.write(",".join([r.sentence, r.word, res[0], str(res[1])]) + "\n")
 
 
 if __name__ == "__main__":
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     #
     # relies a corpus matches, faster
     #
-    do_tfidf(token_list)
+    do_tfidf(token_list, data)
 
     #
     # less dependant on corpus vocabulary, slower
