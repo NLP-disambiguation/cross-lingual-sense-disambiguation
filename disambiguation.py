@@ -1,8 +1,10 @@
 from util import load, tokenize, load_downloaded_model, download_unzip, download_gzip
-from tfidf import tfidf, Disambiguation_tfidf
-from word2vec import word2vec, Disambiguation_w2v, generate_additional_data, load_keyed_vector_model
-from LSTM import preprocess_tokens, prepare_data, make_model, metrics
+from disambiguation_methods.tfidf import tfidf, Disambiguation_tfidf
+from disambiguation_methods.word2vec import word2vec, Disambiguation_w2v, generate_additional_data, load_keyed_vector_model
+from disambiguation_methods.LSTM import preprocess_tokens, prepare_data, make_model, metrics
+from disambiguation_methods.dictionary_web import use_best
 from sklearn.model_selection import train_test_split
+from corpus_augmentation.text_generation import LSTM_generation
 
 
 def do_LSTM(data):
@@ -10,12 +12,7 @@ def do_LSTM(data):
     fname = "wiki.sl.vec"
 
     generate = True
-    if generate:
-        model = load_keyed_vector_model(fname)
-        generate_additional_data(data, "generated_token_lists.csv", model)
-        data, text_classes = load("generated_token_lists.csv")
-        tokenized_sent_list, Y = preprocess_tokens(data, generated=True)
-        del model
+    if generate: tokenized_sent_list, Y = LSTM_generation(data, fname)
     else:
         tokenized_sent_list, Y, Y_original = preprocess_tokens(data)
     word2vecmodel = load_downloaded_model(fname)
@@ -37,6 +34,15 @@ def do_word2vec(token_list, text_classes):
     word2vecmodel = word2vec(token_list)
     similarities = Disambiguation_w2v("V Afriki sem jahal zebro.", text_classes, word2vecmodel)
     print(max(similarities, key=similarities.get))
+
+
+def do_dictionary(data):
+    with open("dictionary_disambiguation.txt", "w") as f:
+        f.write("sentence, word, definition, LCH score")
+        for i, r in data.iterrows():
+            res = use_best(r.sentence, r.word)
+            print(res)
+            f.write(",".join([r.sentence, r.word, res[0], res[1]]) + "\n")
 
 
 if __name__ == "__main__":
@@ -61,3 +67,9 @@ if __name__ == "__main__":
     # less dependant on corpus vocabulary, slower
     #
     do_word2vec(token_list, text_classes)
+
+    #
+    # unsupervised, dependant on exhaustive dictionary definitions
+    #
+    do_dictionary(data)
+

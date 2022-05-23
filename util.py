@@ -38,6 +38,7 @@ def load(path, transform=False, transform_column=None):
     for w in data.word.unique():
         for id in data[data.word == w].meaning.unique():
             text_classes[w + "_" + id] = data[(data.meaning == id) & (data.word == w)].sentence.values
+    data["meaning"] = data["word"] + "_" + data["meaning"]
     return data, text_classes
 
 
