@@ -49,6 +49,7 @@ if __name__ == "__main__":
     # WARNING for googletrans and gensim - update versions
     # pip install --upgrade gensim to v4 if error
     # pip install googletrans==3.1.0a0
+    # google colab: sys.path.append("<path to code folder>")
 
     data, text_classes = load('data.csv')
     token_list = tokenize(list(data.sentence.values))
